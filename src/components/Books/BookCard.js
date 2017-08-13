@@ -25,6 +25,7 @@ class BookCard extends React.Component {
                             <img
                                 alt="example"
                                 width="100%"
+                                height="300px"
                                 src={this.props.cover}
                             />
                         </div>
@@ -42,8 +43,10 @@ class BookCard extends React.Component {
                             <div className="book-score">
                                 <Rate
                                     disabled
-                                    defaultValue={this.props.score}
+                                    value={this.props.score}
+                                    allowHalf={true}
                                 />
+                                <Tag color="#f50">{this.props.score}</Tag>
                             </div>
                             <div className="book-desc">
                                 <p>

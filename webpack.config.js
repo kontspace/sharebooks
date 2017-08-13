@@ -2,6 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
+var WebpackClearConsole = require("webpack-clear-console").WebpackClearConsole;
 
 const srcPath = path.join(__dirname, "src");
 const outputPath = path.join(__dirname, "dist");
@@ -69,6 +70,8 @@ module.exports = {
             sourceMap: true,
             warnings: true
         }),
-        new webpack.NamedModulesPlugin()
+        
+        new webpack.NamedModulesPlugin(),
+        // new WebpackClearConsole()
     ]
 };
