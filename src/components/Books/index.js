@@ -1,33 +1,33 @@
 import React from "react";
 import ReactDOM from "react-dom";
-
-import { Row, Col, Pagination } from "antd";
-
+import { Row, Col, Pagination, message } from "antd";
+import agent from '../../agent'
 import BookCard from "./BookCard";
 
 import "../../less/books.less";
 
-export default class Books extends React.Component {
+export default class ListBooks extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             books: [],
             pagination: {
-                defaultPageSize: 20,
                 total: 1,
                 onChange: this.handlePaginationChange
             }
         };
     }
-    handlePaginationChange = (page, pageSize) =>{
-        this.listBooks(`http://book.itzh.org/api/v1/book/get?bookId=-1&pageSize=${pageSize}&pageNum=${page}`)
+    handlePaginationChange = (pageNum, pageSize) => {
+        agent.Books.list(pageNum, pageSize)
             .then(this.handleListBooks)
-    }
+            .catch(this.handlerRequestError)
+    };
     handleListBooks = res => {
+        let result = res.data.result;
         let pagination = Object.assign({}, this.state.pagination);
-        pagination.total = res.total;
+        pagination.total = res.data.total;
 
-        let books = res.result.map(book => {
+        let books = result.map(book => {
             return {
                 _id: book._id,
                 title: book.name,
@@ -41,14 +41,16 @@ export default class Books extends React.Component {
         });
         this.setState({ books: books, pagination: pagination });
     };
+    handlerRequestError = error => {
+        message.error(error, 5);
+    };
     listBooks = url => {
         return fetch(url).then(res => res.json());
     };
     componentDidMount() {
-        let pageSize = this.state.pagination.defaultPageSize;
-        this.listBooks(
-            `http://book.itzh.org/api/v1/book/get?bookId=-1&pageSize=${pageSize}`
-        ).then(this.handleListBooks);
+        agent.Books.list(1, 5)
+            .then(this.handleListBooks)
+            .catch(this.handlerRequestError)
     }
     render() {
         return (

@@ -1,27 +1,63 @@
-import superagentPromise from "superagent-promise";
-import _superagent from "superagent";
+import axios from "axios";
 
-const superagent = superagentPromise(_superagent, global.Promise);
+import "url-search-params-polyfill";
 
-const API_ROOT = "http://book.itzh.org/api/v1";
+// polyfill
+if (window.URLSearchParams) {
+    window.URLSearchParams = URLSearchParams;
+}
 
-const responseBody = res => res.body;
+const request = axios.create({
+    baseURL: "http://book.itzh.org/api/v1/",
+    timeout: 10000
+});
 
-const handleErrors = res => {
-    if (res.status === 401) {
-        authStore.logout();
+request.defaults.headers.post["Content-Type"] =
+    "application/x-www-form-urlencoded";
+request.defaults.headers.put["Content-Type"] =
+    "application/x-www-form-urlencoded";
+
+const copyObj = obj => Object.assign({}, obj);
+
+request.interceptors.request.use(
+    config => {
+        let formMethods = ["post", "put"];
+        let _config = copyObj(config);
+
+        if (_config.method.indexOf(formMethods) > -1) {
+            if (_config.data) {
+                let _data = copyObj(_config.data);
+                _config.data = new URLSearchParams(_data);
+            }
+        }
+        return _config;
+    },
+    error => {
+        return Promise.reject(error);
     }
-    return err;
+);
+
+request.interceptors.response.use(response => {
+    if (response.data.code != 0) {
+        console.log(response);
+        return Promise.reject(response.data.msg);
+    }
+    return response;
+});
+
+const Books = {
+    list: (pageNum = 1, pageSize = 20) =>
+        request.get("/book/get", {
+            params: {
+                bookId: -1,
+                pageNum,
+                pageSize
+            }
+        })
 };
 
-const request = {
-    get: url => superagent.get(`${API_ROOT}${url}`).end(responseBody)
+const agent = {
+    Books
 };
 
-const Book = {
-    list: () => request.get('/book/get?bookId=-1')
-}
-
-export default {
-    Book
-}
+export default agent;

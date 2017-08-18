@@ -5,7 +5,7 @@ import { useStrict } from "mobx";
 import { Provider } from "mobx-react";
 
 import App from "./components/App";
-import Books from "./components/Books";
+import ListBooks from "./components/Books";
 
 
 import stores from "./stores";
@@ -19,7 +19,7 @@ const Root = () =>
     <Provider {...stores}>
         <Router history={hashHistory}>
             <Route path="/" component={App}>
-                <IndexRoute component={Books} />
+                <IndexRoute component={ListBooks} />
                 {/* <Route path="login" component={Login} />
                 <Route path="register" component={Register} />
                 <Route path="editor" component={Editor} />
