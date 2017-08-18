@@ -72,6 +72,7 @@ class BookCard extends React.Component {
                                         icon="download"
                                         size="default"
                                         href={this.props.download}
+                                        download
                                     >
                                         下载
                                     </a>
