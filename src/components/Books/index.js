@@ -1,45 +1,30 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Row, Col, Pagination, message } from "antd";
-import agent from '../../agent'
+import {
+    Row,
+    Col,
+    Pagination,
+    message,
+    Spin,
+    Select,
+    Button,
+    Icon
+} from "antd";
+import { inject, observer } from "mobx-react";
+import agent from "../../agent";
 import BookCard from "./BookCard";
 
 import "../../less/books.less";
 
-export default class ListBooks extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            books: [],
-            pagination: {
-                total: 1,
-                onChange: this.handlePaginationChange
-            }
-        };
-    }
-    handlePaginationChange = (pageNum, pageSize) => {
-        agent.Books.list(pageNum, pageSize)
-            .then(this.handleListBooks)
-            .catch(this.handlerRequestError)
-    };
-    handleListBooks = res => {
-        let result = res.data.result;
-        let pagination = Object.assign({}, this.state.pagination);
-        pagination.total = res.data.total;
+const Option = Select.Option;
 
-        let books = result.map(book => {
-            return {
-                _id: book._id,
-                title: book.name,
-                cover: book.bookImgSrc, //book.bookImgSrc,
-                tags: book.tag,
-                desc: book.describe,
-                score: parseFloat((book.score / 20).toFixed(1)), // 100 -> 5
-                category: book.category,
-                download: book.downloadLink
-            };
-        });
-        this.setState({ books: books, pagination: pagination });
+@inject("bookStore")
+@observer
+export default class ListBooks extends React.Component {
+    handlePaginationChange = (pageNum, pageSize) => {
+        this.props.bookStore
+            .loadBooks(pageNum, pageSize)
+            .catch(this.handlerRequestError);
     };
     handlerRequestError = error => {
         message.error(error, 5);
@@ -48,19 +33,72 @@ export default class ListBooks extends React.Component {
         return fetch(url).then(res => res.json());
     };
     componentDidMount() {
-        agent.Books.list(1, 5)
-            .then(this.handleListBooks)
-            .catch(this.handlerRequestError)
+        this.props.bookStore.loadBooks().catch(this.handlerRequestError);
+        this.props.bookStore.loadCategories().catch(this.handlerRequestError);
     }
     render() {
         return (
             <div id="books">
-                <div className="cards">
-                    {this.state.books.map((book, i) =>
-                        <BookCard key={book._id} {...book} />
-                    )}
-                </div>
-                <Pagination className="pagination" {...this.state.pagination} />
+                <Spin spinning={this.props.bookStore.isLoading} tip="加载中......">
+                    <Row>
+                        <Col span={4} />
+                        <Col span={16}>
+                            <Row className="books-search" gutter={16}>
+                                <Col span={4}>
+                                    <Select
+                                        showSearch
+                                        placeholder="选择分类"
+                                        style={{ width: "100%" }}
+                                    >
+                                        <Option value="all">全部</Option>
+                                        {this.props.bookStore.categories.map(
+                                            c =>
+                                                <Option key={c} value={c}>
+                                                    {c}
+                                                </Option>
+                                        )}
+                                    </Select>
+                                </Col>
+                                <Col span={18}>
+                                    <Select
+                                        showSearch
+                                        placeholder="选择标签"
+                                        mode="multiple"
+                                        style={{ width: "100%" }}
+                                    >
+                                        {this.props.bookStore.categories.map(
+                                            c =>
+                                                <Option key={c} value={c}>
+                                                    {c}
+                                                </Option>
+                                        )}
+                                    </Select>
+                                </Col>
+                                <Col span={2}>
+                                    <Button type="primary" icon="search">
+                                        Search
+                                    </Button>
+                                </Col>
+                            </Row>
+
+                            <div className="cards">
+                                {this.props.bookStore.books.map((book, i) =>
+                                    <BookCard key={book._id} {...book} />
+                                )}
+                            </div>
+                        </Col>
+                        <Col span={4} />
+                    </Row>
+                </Spin>
+                {this.props.bookStore.isLoading
+                    ? ""
+                    : <Pagination
+                          className="pagination"
+                          total={this.props.bookStore.total}
+                          onChange={this.handlePaginationChange}
+                          defaultPageSize={this.props.bookStore.defaultPageSize}
+                          current={this.props.bookStore.currentPage}
+                      />}
             </div>
         );
     }

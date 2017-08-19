@@ -8,12 +8,18 @@ import App from "./components/App";
 import ListBooks from "./components/Books";
 
 
-import stores from "./stores";
+import bookStore from "./stores/bookStore";
+
+const stores = {
+    bookStore
+}
 
 // For easier debugging
 window._____APP_STATE_____ = stores;
 
 useStrict(true);
+
+
 
 const Root = () =>
     <Provider {...stores}>

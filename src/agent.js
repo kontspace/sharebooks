@@ -56,8 +56,13 @@ const Books = {
         })
 };
 
+const Category = {
+    list: () => request.get('/category/get')
+}
+
 const agent = {
-    Books
+    Books,
+    Category
 };
 
 export default agent;

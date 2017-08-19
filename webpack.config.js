@@ -67,10 +67,10 @@ module.exports = {
         new FaviconsWebpackPlugin({
             logo: path.join(__dirname, "public", "images", "favicon.png")
         }),
-        // new webpack.optimize.UglifyJsPlugin({
-        //     sourceMap: true,
-        //     warnings: true
-        // }),
+        new webpack.optimize.UglifyJsPlugin({
+            sourceMap: true,
+            warnings: true
+        }),
         
         new webpack.NamedModulesPlugin(),
         // new WebpackClearConsole()
