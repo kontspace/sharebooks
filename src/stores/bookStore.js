@@ -7,6 +7,7 @@ class BookStore {
     @observable bookCategories = new Map();
     @observable total = 0;
     @observable currentPage = 1;
+    @observable newTopBookRegistry = new Map();
     defaultPageSize = 10;
 
     @computed
@@ -17,7 +18,12 @@ class BookStore {
     @computed
     get categories() {
         return this.bookCategories.values();
-    } 
+    }
+
+    @computed
+    get newTop() {
+        return this.newTopBookRegistry.values();
+    }
 
     // @computed
     // get tags(category) {
@@ -25,14 +31,28 @@ class BookStore {
     // }
 
     @action
+    loadNewTop(params = {}) {
+        return agent.Books.newTop({ pageSize: 10 }).then(
+            action(res => {
+                res.data.result.forEach(book => {
+                    this.newTopBookRegistry.set(book._id, {
+                        title: book.name,
+                        download: book.downloadLink
+                    });
+                });
+            })
+        );
+    }
+
+    @action
     loadCategories() {
-        return agent.Category.list()
-            .then(action(res => {
-                console.log(res)
+        return agent.Category.list().then(
+            action(res => {
                 res.data.result.forEach(category => {
-                    this.bookCategories.set(category._id, category.name)
-                })
-            }))
+                    this.bookCategories.set(category._id, category.name);
+                });
+            })
+        );
     }
 
     @action
@@ -56,7 +76,7 @@ class BookStore {
                         download: book.downloadLink
                     });
                 });
-                
+
                 this.currentPage = pageNum;
             })
         );

@@ -53,12 +53,20 @@ const Books = {
                 pageNum,
                 pageSize
             }
+        }),
+    newTop: params =>
+        request.get("/book/get", {
+            params: {
+                bookId: -1,
+                dateSort: -1,
+                ...params
+            }
         })
 };
 
 const Category = {
-    list: () => request.get('/category/get')
-}
+    list: () => request.get("/category/get")
+};
 
 const agent = {
     Books,
