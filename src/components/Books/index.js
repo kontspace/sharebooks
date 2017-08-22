@@ -11,11 +11,14 @@ import {
     Icon
 } from "antd";
 import { inject, observer } from "mobx-react";
+import DevTools from "mobx-react-devtools";
+
 import agent from "../../agent";
 
 // components
 import BookCard from "./BookCard";
-import {BookListGroup, ListOption}  from "./BookListGroup";
+import BookListGroup from "./BookListGroup";
+import Categories from "./Categories";
 
 import "../../less/books.less";
 
@@ -31,6 +34,9 @@ export default class ListBooks extends React.Component {
     };
     handlerRequestError = error => {
         message.error(error, 5);
+    };
+    handleCategoriesOnClick = e => {
+        this.props.bookStore.setSearchRegistry("currentKey", e.key);
     };
     listBooks = url => {
         return fetch(url).then(res => res.json());
@@ -87,7 +93,16 @@ export default class ListBooks extends React.Component {
 
                 <Spin spinning={this.props.bookStore.isLoading} tip="加载中......">
                     <Row>
-                        <Col span={5} />
+                        <Col span={5}>
+                            <Categories
+                                currentKey={
+                                    this.props.bookStore
+                                        .currentKeySearchRegistry
+                                }
+                                categories={this.props.bookStore.categories}
+                                onClick={this.handleCategoriesOnClick}
+                            />
+                        </Col>
                         <Col span={14}>
                             <div className="cards">
                                 {this.props.bookStore.books.map((book, i) =>
@@ -96,9 +111,10 @@ export default class ListBooks extends React.Component {
                             </div>
                         </Col>
                         <Col span={5}>
-                            <BookListGroup>
-                                {this.props.bookStore.newTop.map((book, i) => <ListOption key={i}><a href={book.download}>{i+1}、{book.title}</a></ListOption>)}
-                            </BookListGroup>
+                            <BookListGroup
+                                head={"最近更新"}
+                                bookMeta={this.props.bookStore.newTop}
+                            />
                         </Col>
                     </Row>
                 </Spin>
@@ -111,6 +127,7 @@ export default class ListBooks extends React.Component {
                           defaultPageSize={this.props.bookStore.defaultPageSize}
                           current={this.props.bookStore.currentPage}
                       />}
+                <DevTools />
             </div>
         );
     }

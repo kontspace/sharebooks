@@ -8,6 +8,10 @@ class BookStore {
     @observable total = 0;
     @observable currentPage = 1;
     @observable newTopBookRegistry = new Map();
+    @observable
+    searchRegistry = {
+        currentKey: "all"
+    };
     defaultPageSize = 10;
 
     @computed
@@ -25,10 +29,15 @@ class BookStore {
         return this.newTopBookRegistry.values();
     }
 
-    // @computed
-    // get tags(category) {
-    //     return this.bookCategories.get(categoryId);
-    // }
+    @computed
+    get currentKeySearchRegistry() {
+        return this.searchRegistry.currentKey;
+    }
+
+    @action
+    setSearchRegistry(k, v) {
+        this.searchRegistry[k] = v;
+    }
 
     @action
     loadNewTop(params = {}) {
