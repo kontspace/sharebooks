@@ -1,15 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
-import { Menu, Icon } from "antd";
+import { Menu, Icon, Card } from "antd";
 const SubMenu = Menu.SubMenu;
 
 
 export default class Categories extends React.Component {
     render() {
         return (
+            <Card title='分类' bordered={false} noHovering={true} style={{ width: "90%" }}>
             <Menu
-                style={{ width: "90%", border: "None" }}
+                style={{ width: "100%", border: "None" }}
                 onClick={this.props.onClick}
                 selectedKeys={[
                     this.props.currentKey
@@ -22,6 +23,7 @@ export default class Categories extends React.Component {
                     </Menu.Item>
                 )}
             </Menu>
+            </Card>
         );
     }
 }

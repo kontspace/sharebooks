@@ -36,7 +36,8 @@ export default class ListBooks extends React.Component {
         message.error(error, 5);
     };
     handleCategoriesOnClick = e => {
-        this.props.bookStore.setSearchRegistry("currentKey", e.key);
+        this.props.bookStore.setSearchRegistry("category", e.key);
+        this.props.bookStore.loadBooks().catch(this.handlerRequestError);
     };
     listBooks = url => {
         return fetch(url).then(res => res.json());
@@ -105,9 +106,15 @@ export default class ListBooks extends React.Component {
                         </Col>
                         <Col span={14}>
                             <div className="cards">
-                                {this.props.bookStore.books.map((book, i) =>
-                                    <BookCard key={book._id} {...book} />
-                                )}
+                                {this.props.bookStore.books.length === 0
+                                    ? <div className='card-not-found'>没有找到该类书籍......</div>
+                                    : this.props.bookStore.books.map(
+                                          (book, i) =>
+                                              <BookCard
+                                                  key={book._id}
+                                                  {...book}
+                                              />
+                                      )}
                             </div>
                         </Col>
                         <Col span={5}>

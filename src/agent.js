@@ -9,7 +9,7 @@ if (window.URLSearchParams) {
 
 const request = axios.create({
     baseURL: "http://book.itzh.org/api/v1/",
-    timeout: 10000
+    // timeout: 10000
 });
 
 request.defaults.headers.post["Content-Type"] =
@@ -39,19 +39,19 @@ request.interceptors.request.use(
 
 request.interceptors.response.use(response => {
     if (response.data.code != 0) {
-        console.log(response);
         return Promise.reject(response.data.msg);
     }
     return response;
 });
 
 const Books = {
-    list: (pageNum = 1, pageSize = 20) =>
+    list: (pageNum = 1, pageSize = 20, params={}) =>
         request.get("/book/get", {
             params: {
                 bookId: -1,
                 pageNum,
-                pageSize
+                pageSize,
+                ...params
             }
         }),
     newTop: params =>

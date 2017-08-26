@@ -10,7 +10,7 @@ class BookStore {
     @observable newTopBookRegistry = new Map();
     @observable
     searchRegistry = {
-        currentKey: "all"
+        category: "all"
     };
     defaultPageSize = 10;
 
@@ -31,7 +31,7 @@ class BookStore {
 
     @computed
     get currentKeySearchRegistry() {
-        return this.searchRegistry.currentKey;
+        return this.searchRegistry.category;
     }
 
     @action
@@ -68,7 +68,15 @@ class BookStore {
     loadBooks(pageNum = 1, PageSize = this.defaultPageSize) {
         this.isLoading = true;
         this.bookRegistry.clear();
-        return agent.Books.list(pageNum, PageSize).then(
+
+        let searchFields = {}
+        if (this.searchRegistry.category != 'all') {
+            searchFields.category = this.searchRegistry.category;
+        } else {
+            delete searchFields.category;
+        }
+
+        return agent.Books.list(pageNum, PageSize, searchFields).then(
             action(res => {
                 this.isLoading = false;
                 this.total = res.data.total;
