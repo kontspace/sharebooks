@@ -34,6 +34,7 @@ export default class OptionSearch extends React.Component {
             </Select>
         );
     };
+
     render() {
         // console.log(this.props);
         return (
@@ -56,7 +57,7 @@ export default class OptionSearch extends React.Component {
                         : this._renderTagsSearch()}
                 </Col>
                 <Col span={2}>
-                    <Button type="primary" icon="search" onClick={this.props.onSearch}>
+                    <Button type="primary" icon="search" autoFocus onClick={this.props.onSearch}>
                         Search
                     </Button>
                 </Col>

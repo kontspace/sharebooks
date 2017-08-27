@@ -171,7 +171,7 @@ export default class ListBooks extends React.Component {
                           defaultPageSize={this.props.bookStore.defaultPageSize}
                           current={this.props.bookStore.currentPage}
                       />}
-                <DevTools />
+                {/*<DevTools />*/}
             </div>
         );
     }
