@@ -6,12 +6,25 @@ import { Card } from "antd";
 
 import "../../less/bookListGroup.less";
 
-export default class BookListGroup extends React.Component {
+class BookListGroup extends React.Component {
+    proxyClick = (bookId, e) => {
+        console.log(bookId)
+        this.props.onDownloadClick(bookId)
+    }
+
     render() {
         return (
             <Card title={this.props.head} bordered={false} noHovering={true} style={{ width: "100%" }}>
                 <div className='book-list'>
-                    {this.props.bookMeta.map((item, i) => <p className='book-list-item' key={i}><a download href={item.download}>{item.title}</a></p>)}
+                    {this.props.bookMeta.map((item, i) => 
+                        <p 
+                            className='book-list-item' 
+                            key={item._id}>
+                            <a 
+                                onClick={this.proxyClick.bind(this, item._id)} 
+                                download 
+                                href={item.download}>{item.title}</a>
+                        </p>)}
                 </div>
             </Card>
         );
@@ -19,6 +32,10 @@ export default class BookListGroup extends React.Component {
 }
 
 BookListGroup.PropTypes = {
+    _id: PropTypes.string,
     head: PropTypes.string,
-    bookMeta: PropTypes.array
+    bookMeta: PropTypes.array,
+    onDownloadClick: PropTypes.func
 }
+
+export default BookListGroup

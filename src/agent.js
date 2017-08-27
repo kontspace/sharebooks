@@ -61,16 +61,27 @@ const Books = {
                 dateSort: -1,
                 ...params
             }
-        })
+        }),
+    increaseDownloadCount: bookId => 
+        request.get('/book/download', {
+            params: {
+                bookId: bookId
+            }
+        }),
 };
 
 const Category = {
     list: () => request.get("/category/get")
 };
 
+const Tags = {
+    list: params => request.get('/tag/get', params=params)
+}
+
 const agent = {
     Books,
-    Category
+    Category,
+    Tags
 };
 
 export default agent;

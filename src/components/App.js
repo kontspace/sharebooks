@@ -36,7 +36,7 @@ const App = props =>
                 </Row>
             </Header>
             <Content style={{ padding: "0 50px" }}>
-                <Breadcrumb style={{ margin: "40px 0" }}>
+                <Breadcrumb style={{ margin: "30px 0" }}>
                     {/* <Breadcrumb.Item>首页</Breadcrumb.Item>
                     <Breadcrumb.Item>List</Breadcrumb.Item>
                     <Breadcrumb.Item>App</Breadcrumb.Item> */}

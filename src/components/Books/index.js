@@ -19,6 +19,7 @@ import agent from "../../agent";
 import BookCard from "./BookCard";
 import BookListGroup from "./BookListGroup";
 import Categories from "./Categories";
+import OptionSearch from "./OptionSearch";
 
 import "../../less/books.less";
 
@@ -28,68 +29,93 @@ const Option = Select.Option;
 @observer
 export default class ListBooks extends React.Component {
     handlePaginationChange = (pageNum, pageSize) => {
+        let params = this.getSearchFileds();
         this.props.bookStore
-            .loadBooks(pageNum, pageSize)
+            .loadBooks(pageNum, pageSize, params)
             .catch(this.handlerRequestError);
     };
     handlerRequestError = error => {
         message.error(error, 5);
     };
+    getSearchFileds = () => {
+        let params = {};
+        let sr = this.props.bookStore.getSearchRegistry();
+
+        switch (this.props.bookStore.searchRegistryOption) {
+            case "title":
+                if (sr.title) params.name = sr.title;
+                break;
+            case "tags":
+                if (sr.tags.length > 0) params.tag = sr.tags.join(",");
+                break;
+        }
+
+        if (sr.category != "all") {
+            params.category = sr.category;
+        }
+
+        return params;
+    };
+    collectDownload = bookId => {
+        console.log(bookId);
+        this.props.bookStore
+            .increaseDownloadCount(bookId)
+            .catch(this.handlerRequestError);
+    };
     handleCategoriesOnClick = e => {
         this.props.bookStore.setSearchRegistry("category", e.key);
-        this.props.bookStore.loadBooks().catch(this.handlerRequestError);
+
+        let params = this.getSearchFileds();
+        this.props.bookStore
+            .loadBooks(1, this.props.bookStore._defaultPageSize, params)
+            .catch(this.handlerRequestError);
     };
-    listBooks = url => {
-        return fetch(url).then(res => res.json());
+    handleOptionSearchOnOptionChange = value => {
+        this.props.bookStore.setSearchRegistry("option", value);
+    };
+    handleOptionSearchOnValueChange = e => {
+        console.log(e);
+        switch (this.props.bookStore.searchRegistryOption) {
+            case "title":
+                this.props.bookStore.setSearchRegistry("title", e);
+                break;
+            case "tags":
+                this.props.bookStore.setSearchRegistry("tags", e);
+                break;
+        }
+    };
+    handleOptionSearchOnSearch = () => {
+        let params = this.getSearchFileds();
+
+        this.props.bookStore
+            .loadBooks(1, this.props.bookStore._defaultPageSize, params)
+            .catch(this.handlerRequestError);
     };
     componentDidMount() {
         this.props.bookStore.loadBooks().catch(this.handlerRequestError);
         this.props.bookStore.loadCategories().catch(this.handlerRequestError);
         this.props.bookStore.loadNewTop().catch(this.handlerRequestError);
+        this.props.bookStore.loadTags().catch(this.handlerRequestError);
+        this.props.bookStore.loadTopDownload().catch(this.handlerRequestError);
     }
     render() {
+        // console.log(this.props.bookStore)
         return (
             <div id="books">
                 <Row>
-                    <Col span={4} />
-                    <Col span={16}>
-                        <Row className="books-search" gutter={16}>
-                            <Col span={4}>
-                                <Select
-                                    showSearch
-                                    placeholder="选择分类"
-                                    style={{ width: "100%" }}
-                                >
-                                    <Option value="all">全部</Option>
-                                    {this.props.bookStore.categories.map(c =>
-                                        <Option key={c} value={c}>
-                                            {c}
-                                        </Option>
-                                    )}
-                                </Select>
-                            </Col>
-                            <Col span={16}>
-                                <Select
-                                    showSearch
-                                    placeholder="选择标签"
-                                    mode="multiple"
-                                    style={{ width: "100%" }}
-                                >
-                                    {this.props.bookStore.categories.map(c =>
-                                        <Option key={c} value={c}>
-                                            {c}
-                                        </Option>
-                                    )}
-                                </Select>
-                            </Col>
-                            <Col span={2}>
-                                <Button type="primary" icon="search">
-                                    Search
-                                </Button>
-                            </Col>
-                        </Row>
+                    <Col span={5} />
+                    <Col span={14}>
+                        <OptionSearch
+                            tags={this.props.bookStore.tags}
+                            option={this.props.bookStore.searchRegistryOption}
+                            onValueChange={this.handleOptionSearchOnValueChange}
+                            onOptionChange={
+                                this.handleOptionSearchOnOptionChange
+                            }
+                            onSearch={this.handleOptionSearchOnSearch}
+                        />
                     </Col>
-                    <Col span={4} />
+                    <Col span={5} />
                 </Row>
 
                 <Spin spinning={this.props.bookStore.isLoading} tip="加载中......">
@@ -107,11 +133,16 @@ export default class ListBooks extends React.Component {
                         <Col span={14}>
                             <div className="cards">
                                 {this.props.bookStore.books.length === 0
-                                    ? <div className='card-not-found'>没有找到该类书籍......</div>
+                                    ? <div className="card-not-found">
+                                          没有找到该类书籍......
+                                      </div>
                                     : this.props.bookStore.books.map(
                                           (book, i) =>
                                               <BookCard
                                                   key={book._id}
+                                                  onDownloadClick={
+                                                      this.collectDownload
+                                                  }
                                                   {...book}
                                               />
                                       )}
@@ -120,7 +151,13 @@ export default class ListBooks extends React.Component {
                         <Col span={5}>
                             <BookListGroup
                                 head={"最近更新"}
+                                onDownloadClick={this.collectDownload}
                                 bookMeta={this.props.bookStore.newTop}
+                            />
+                            <BookListGroup
+                                head={"下载最多"}
+                                onDownloadClick={this.collectDownload}
+                                bookMeta={this.props.bookStore.top10Download}
                             />
                         </Col>
                     </Row>

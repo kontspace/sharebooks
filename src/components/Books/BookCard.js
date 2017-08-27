@@ -7,6 +7,7 @@ import "../../less/bookcard.less";
 
 const LIMIT = 100;
 
+
 class BookCard extends React.Component {
     limit_desc(desc) {
         if (desc.length > LIMIT) {
@@ -16,7 +17,10 @@ class BookCard extends React.Component {
             return desc;
         }
     }
-
+    proxyOnClick = e => {
+        console.log(this.props._id)
+        this.props.onDownloadClick(this.props._id)
+    }
     render() {
         return (
             <div className="book-card">
@@ -37,6 +41,7 @@ class BookCard extends React.Component {
                             target="_blank"
                             href={this.props.download}
                             download
+                            onClick={this.proxyOnClick}
                         >
                             点击下载
                         </a>
@@ -75,13 +80,15 @@ class BookCard extends React.Component {
 }
 
 BookCard.PropTypes = {
+    _id: PropTypes.string,
     title: PropTypes.string,
     cover: PropTypes.string,
     tags: PropTypes.array,
     desc: PropTypes.string,
     score: PropTypes.number,
     category: PropTypes.string,
-    download: PropTypes.string
+    download: PropTypes.string,
+    onDownloadClick: PropTypes.func
 };
 
 export default BookCard;

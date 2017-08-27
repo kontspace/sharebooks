@@ -8,11 +8,22 @@ class BookStore {
     @observable total = 0;
     @observable currentPage = 1;
     @observable newTopBookRegistry = new Map();
+    @observable bookTags = [];
+    @observable topDownload = new Map();
     @observable
     searchRegistry = {
-        category: "all"
+        category: "all",
+        option: "title",
+        tags: [],
+        title: ""
     };
+
     defaultPageSize = 10;
+
+    @computed
+    get _defaultPageSize() {
+        return this.defaultPageSize;
+    }
 
     @computed
     get books() {
@@ -30,8 +41,28 @@ class BookStore {
     }
 
     @computed
+    get top10Download() {
+        return this.topDownload.values();
+    }
+
+    @computed
     get currentKeySearchRegistry() {
         return this.searchRegistry.category;
+    }
+
+    @computed
+    get searchRegistryOption() {
+        return this.searchRegistry.option;
+    }
+
+    @computed
+    get tags() {
+        return this.bookTags;
+    }
+
+    @action
+    getSearchRegistry() {
+        return this.searchRegistry;
     }
 
     @action
@@ -40,11 +71,21 @@ class BookStore {
     }
 
     @action
+    loadTags(params = { count: 10 }) {
+        return agent.Tags.list(params).then(
+            action(res => {
+                this.bookTags = res.data.result.map(item => item.name);
+            })
+        );
+    }
+
+    @action
     loadNewTop(params = {}) {
         return agent.Books.newTop({ pageSize: 10 }).then(
             action(res => {
                 res.data.result.forEach(book => {
                     this.newTopBookRegistry.set(book._id, {
+                        _id: book._id,
                         title: book.name,
                         download: book.downloadLink
                     });
@@ -65,16 +106,9 @@ class BookStore {
     }
 
     @action
-    loadBooks(pageNum = 1, PageSize = this.defaultPageSize) {
+    loadBooks(pageNum = 1, PageSize = this.defaultPageSize, searchFields = {}) {
         this.isLoading = true;
         this.bookRegistry.clear();
-
-        let searchFields = {}
-        if (this.searchRegistry.category != 'all') {
-            searchFields.category = this.searchRegistry.category;
-        } else {
-            delete searchFields.category;
-        }
 
         return agent.Books.list(pageNum, PageSize, searchFields).then(
             action(res => {
@@ -97,6 +131,28 @@ class BookStore {
                 this.currentPage = pageNum;
             })
         );
+    }
+
+    @action
+    loadTopDownload = () => {
+        return agent.Books
+            .list(1, this.defaultPageSize, { downloadSort: -1 })
+            .then(
+                action(res => {
+                    res.data.result.forEach(book => {
+                        this.topDownload.set(book._id, {
+                            _id: book._id,
+                            title: book.name,
+                            download: book.downloadLink
+                        });
+                    });
+                })
+            );
+    };
+
+    @action
+    increaseDownloadCount(bookId) {
+        return agent.Books.increaseDownloadCount(bookId);
     }
 }
 

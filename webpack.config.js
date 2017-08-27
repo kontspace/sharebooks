@@ -35,8 +35,8 @@ module.exports = {
                 use: [
                     "style-loader",
                     { loader: "css-loader", options: { importLoaders: 1 } },
-                    'postcss-loader',
-                    "less-loader",
+                    "postcss-loader",
+                    "less-loader"
                 ]
             },
             {
@@ -67,12 +67,17 @@ module.exports = {
         new FaviconsWebpackPlugin({
             logo: path.join(__dirname, "public", "images", "favicon.png")
         }),
-        // new webpack.optimize.UglifyJsPlugin({
-        //     sourceMap: true,
-        //     warnings: true
-        // }),
-        
-        new webpack.NamedModulesPlugin(),
+        new webpack.optimize.UglifyJsPlugin({
+            sourceMap: true,
+
+            comments: false,
+            compress: {
+                drop_console: true,
+                warnings: false
+            }
+        }),
+
+        new webpack.NamedModulesPlugin()
         // new WebpackClearConsole()
     ]
 };
