@@ -74,7 +74,6 @@ export default class ListBooks extends React.Component {
         this.props.bookStore.setSearchRegistry("option", value);
     };
     handleOptionSearchOnValueChange = e => {
-        console.log(e);
         switch (this.props.bookStore.searchRegistryOption) {
             case "title":
                 this.props.bookStore.setSearchRegistry("title", e);
@@ -86,7 +85,7 @@ export default class ListBooks extends React.Component {
     };
     handleOptionSearchOnSearch = () => {
         let params = this.getSearchFileds();
-
+        console.log(params)
         this.props.bookStore
             .loadBooks(1, this.props.bookStore._defaultPageSize, params)
             .catch(this.handlerRequestError);

@@ -2,15 +2,26 @@ import React from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 
-import { Row, Col, Select, Input, Button, Icon } from "antd";
+import { Row, Col, Select, Input, Button, Icon, Search } from "antd";
 
-
-export default class OptionSearch extends React.Component {
-    proxyCommonOnChange = (e) => this.props.onValueChange(e.target.value)
-
+class OptionSearch extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    proxyCommonOnChange = e => {
+        console.log(this.refs.searchButton);
+        // this.refs.searchButton.focus()
+        this.props.onValueChange(e.target.value);
+    };
 
     _renderTitleSearch = () => {
-        return <Input onChange={this.proxyCommonOnChange} placeholder="搜索书名" />;
+        return (
+            <Input.Search
+                onChange={this.proxyCommonOnChange}
+                onSearch={this.props.onSearch}
+                placeholder="搜索书名"
+            />
+        );
     };
 
     _renderTagsSearch = () => {
@@ -23,11 +34,7 @@ export default class OptionSearch extends React.Component {
                 style={{ width: "100%" }}
             >
                 {this.props.tags.map(c =>
-                    <Select.Option
-                        key={c}
-                        value={c}
-                        
-                    >
+                    <Select.Option key={c} value={c}>
                         {c}
                     </Select.Option>
                 )}
@@ -57,7 +64,13 @@ export default class OptionSearch extends React.Component {
                         : this._renderTagsSearch()}
                 </Col>
                 <Col span={2}>
-                    <Button type="primary" icon="search" autoFocus onClick={this.props.onSearch}>
+                    <Button
+                        // ref={node => this.searchButton = node}
+                        ref="searchButton"
+                        type="primary"
+                        icon="search"
+                        onClick={this.props.onSearch}
+                    >
                         Search
                     </Button>
                 </Col>
@@ -66,10 +79,12 @@ export default class OptionSearch extends React.Component {
     }
 }
 
-// OptionSearch.PropTypes = {
-//     tags: PropTypes.array,
-//     option: PropTypes.string,
-//     onChange: PropTypes.func
-// }
+OptionSearch.PropTypes = {
+    tags: PropTypes.array,
+    option: PropTypes.string,
+    onValueChange: PropTypes.func,
+    onOptionChange: PropTypes.func,
+    onSearch: PropTypes.func
+};
 
-// export default OptionSearch;
+export default OptionSearch;
