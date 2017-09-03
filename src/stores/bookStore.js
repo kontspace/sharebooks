@@ -71,7 +71,7 @@ class BookStore {
     }
 
     @action
-    loadTags(params = { count: 10 }) {
+    loadTags(params = { count: 20 }) {
         return agent.Tags.list(params).then(
             action(res => {
                 this.bookTags = res.data.result.map(item => item.name);

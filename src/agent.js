@@ -7,8 +7,24 @@ if (window.URLSearchParams) {
     window.URLSearchParams = URLSearchParams;
 }
 
+
+// function getBaseURL() {
+//     let key = localStorage.getItem('CURRENT_MENU_KEY');
+//     let baseURL = 'http://book.itzh.org/api/v1/'
+//     switch(key) {
+//         case 'onlinedoc':
+//             baseURL = 'http://doc.itzh.org/api/v1/'
+//         default:
+//         baseURL = 'http://book.itzh.org/api/v1/'
+//     }
+
+//     return baseURL
+// }
+
+
+
 const request = axios.create({
-    baseURL: "http://book.itzh.org/api/v1/",
+    baseURL: 'http://book.itzh.org/api/v1/',
     // timeout: 10000
 });
 
@@ -68,6 +84,13 @@ const Books = {
                 bookId: bookId
             }
         }),
+    get: id => 
+        request.get('/book/get', {
+            params: {
+                bookId: id
+            }
+        })
+    
 };
 
 const Category = {

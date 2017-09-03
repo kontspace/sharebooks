@@ -7,12 +7,14 @@ import { Provider } from "mobx-react";
 
 import App from "./components/App";
 import ListBooks from "./components/Books";
-
+import BookDetail from './components/BookDetail'
 
 import bookStore from "./stores/bookStore";
+import bookDetailStore from "./stores/bookDetailStore";
 
 const stores = {
-    bookStore
+    bookStore,
+    bookDetailStore
 }
 
 // For easier debugging
@@ -27,6 +29,7 @@ const Root = () =>
         <Router history={hashHistory}>
             <Route path="/" component={App}>
                 <IndexRoute component={ListBooks} />
+                <Route path="/books/:id" component={BookDetail} />
                 {/* <Route path="login" component={Login} />
                 <Route path="register" component={Register} />
                 <Route path="editor" component={Editor} />

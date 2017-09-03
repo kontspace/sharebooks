@@ -35,16 +35,16 @@ class BookCard extends React.Component {
                 <div className="card-body">
                     <div className="card-body-title">
                         <h2 className="card-body-title-text">
-                            {this.props.title}
+                            <a href={"/#/books/" + this.props._id}>{this.props.title}</a>
                         </h2>
-                        <a
+                        {/*<a
                             target="_blank"
                             href={this.props.download}
                             download
                             onClick={this.proxyOnClick}
                         >
                             点击下载
-                        </a>
+                        </a>*/}
                     </div>
                     <div className="card-body-category">
                         <span>分类：</span>

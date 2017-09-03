@@ -11,6 +11,7 @@ import {
     Icon
 } from "antd";
 import { inject, observer } from "mobx-react";
+import { withRouter } from "react-router";
 import DevTools from "mobx-react-devtools";
 
 import agent from "../../agent";
@@ -26,6 +27,7 @@ import "../../less/books.less";
 const Option = Select.Option;
 
 @inject("bookStore")
+@withRouter
 @observer
 export default class ListBooks extends React.Component {
     handlePaginationChange = (pageNum, pageSize) => {
@@ -98,7 +100,7 @@ export default class ListBooks extends React.Component {
         this.props.bookStore.loadTopDownload().catch(this.handlerRequestError);
     }
     render() {
-        // console.log(this.props.bookStore)
+        // console.log(this.props)
         return (
             <div id="books">
                 <Row>
